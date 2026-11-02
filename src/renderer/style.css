@@ -1,0 +1,455 @@
+:root {
+  color-scheme: light dark;
+  /* Light: a white enamel station sign with blue lettering. */
+  --plate: #f5f7f8;
+  --plate-raised: #ffffff;
+  --ink: #123a63;
+  --muted: #4f6980;
+  --line: #cbd6df;
+  --rim: rgb(18 58 99 / 0.16);
+  --shadow: rgb(12 42 73 / 0.28);
+  --signal: #ea580c;
+  --din: 'DIN Alternate', 'Helvetica Neue', sans-serif;
+  --din-condensed: 'DIN Condensed', 'Helvetica Neue', sans-serif;
+  --text: -apple-system, 'Helvetica Neue', sans-serif;
+}
+
+/* Dark: the same sign in the classic blue enamel. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --plate: #123a63;
+    --plate-raised: #0c2a49;
+    --ink: #f5f7f8;
+    --muted: #b4c6d6;
+    --line: #2d5580;
+    --rim: rgb(255 255 255 / 0.14);
+    --shadow: rgb(0 0 0 / 0.5);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font: 13px/1.4 var(--text);
+  color: var(--ink);
+  overflow: hidden;
+}
+
+#map {
+  position: fixed;
+  inset: 0;
+}
+
+h1,
+h2,
+p,
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+strong {
+  display: block;
+  font: 16px/1.25 var(--din);
+}
+
+/* The station plate */
+
+#plate {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  width: 348px;
+  max-height: calc(100vh - 24px);
+  display: flex;
+  flex-direction: column;
+  background: var(--plate);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 0 0 1px var(--rim),
+    0 6px 24px var(--shadow);
+}
+
+#plate.collapsed {
+  width: 216px;
+}
+
+#plate-body {
+  flex: 0 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.titlebar {
+  flex: none;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* Leaves room for the window buttons, which macOS draws on top. */
+  padding: 0 8px 0 80px;
+  -webkit-app-region: drag;
+}
+
+#toggle-menu {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  color: var(--muted);
+  -webkit-app-region: no-drag;
+}
+
+#toggle-menu:hover {
+  background: var(--line);
+  color: var(--ink);
+}
+
+#plate.collapsed #toggle-menu svg {
+  transform: rotate(180deg);
+}
+
+h1 {
+  font: 19px/1 var(--din-condensed);
+  color: var(--muted);
+}
+
+/* From and To as two stops on one line */
+
+.route {
+  flex: none;
+  position: relative;
+  padding: 2px 16px 12px 18px;
+}
+
+.route::before {
+  content: '';
+  position: absolute;
+  left: 25px;
+  top: 28px;
+  bottom: 40px;
+  width: 4px;
+  background: var(--signal);
+}
+
+.stop {
+  position: relative;
+  padding-left: 26px;
+}
+
+.stop::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 22px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--plate);
+  border: 4px solid var(--signal);
+}
+
+.stop label {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stop input {
+  width: 100%;
+  height: 34px;
+  padding: 3px 0 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: none;
+  color: var(--ink);
+  font: 25px/1 var(--din-condensed);
+}
+
+.stop input::placeholder {
+  color: var(--muted);
+  opacity: 0.75;
+}
+
+.stop input:focus {
+  outline: none;
+  border-bottom: 2px solid var(--ink);
+}
+
+.stop + .stop {
+  margin-top: 8px;
+}
+
+.options {
+  position: absolute;
+  z-index: 2;
+  left: 26px;
+  right: 0;
+  top: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  background: var(--plate-raised);
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 10px 22px var(--shadow);
+}
+
+.options li {
+  padding: 7px 10px;
+  cursor: pointer;
+}
+
+.options li:hover,
+.options li[aria-selected='true'] {
+  background: var(--line);
+}
+
+.options .message {
+  cursor: default;
+  color: var(--muted);
+}
+
+/* Result and saved journeys */
+
+#result {
+  flex: none;
+  max-height: 40vh;
+  overflow-y: auto;
+  padding: 0 16px;
+}
+
+#result:not(:empty) {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+#result > * + *,
+.tap .maplibregl-popup-content ul {
+  margin-top: 6px;
+}
+
+h2 {
+  font: 19px/1.2 var(--din-condensed);
+  color: var(--ink);
+}
+
+.connection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-radius: 4px;
+}
+
+.connection > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.add {
+  flex: none;
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--ink);
+  color: var(--plate);
+  font: 14px/1.2 var(--din);
+}
+
+.add:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.add:disabled {
+  background: none;
+  color: var(--muted);
+  cursor: default;
+  padding-inline: 0;
+}
+
+#saved {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 16px 14px;
+}
+
+.layers {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 16px 12px;
+  border-top: 1px solid var(--line);
+}
+
+.layers label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.layers input {
+  margin: 0;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+/* The boxes double as a legend for what they switch. */
+.rides input {
+  accent-color: var(--signal);
+}
+
+.network input {
+  accent-color: var(--muted);
+}
+
+#count {
+  color: var(--muted);
+}
+
+#empty {
+  margin-top: 4px;
+  color: var(--muted);
+  max-width: 34ch;
+}
+
+#journeys {
+  margin-top: 4px;
+}
+
+#journeys li {
+  display: flex;
+  align-items: flex-start;
+}
+
+.journey {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 0 5px 12px;
+  border: 0;
+  border-left: 4px solid var(--signal);
+  background: none;
+  color: inherit;
+  text-align: left;
+}
+
+.journey:hover strong {
+  text-decoration: underline;
+}
+
+#journeys li + li .journey {
+  margin-top: 2px;
+}
+
+.remove {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin-top: 3px;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1;
+}
+
+.remove:hover {
+  background: var(--line);
+  color: var(--ink);
+}
+
+/* Map chrome in the same enamel */
+
+.tap .maplibregl-popup-content {
+  padding: 12px 30px 10px 14px;
+  background: var(--plate);
+  color: var(--ink);
+  border-radius: 8px;
+  font: 13px/1.4 var(--text);
+  box-shadow: 0 6px 20px var(--shadow);
+}
+
+.tap .maplibregl-popup-close-button {
+  width: 26px;
+  height: 26px;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.tap .maplibregl-popup-close-button:hover {
+  background: var(--line);
+  color: var(--ink);
+}
+
+.tap[class*='anchor-bottom'] .maplibregl-popup-tip {
+  border-top-color: var(--plate);
+}
+.tap[class*='anchor-top'] .maplibregl-popup-tip {
+  border-bottom-color: var(--plate);
+}
+.tap.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+  border-right-color: var(--plate);
+}
+.tap.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+  border-left-color: var(--plate);
+}
+
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib {
+  background: var(--plate);
+  color: var(--ink);
+}
+
+.maplibregl-ctrl-attrib a {
+  color: var(--ink);
+}
+
+.maplibregl-ctrl-group {
+  background: var(--plate);
+}
+
+@media (prefers-color-scheme: dark) {
+  .maplibregl-ctrl-group .maplibregl-ctrl-icon {
+    filter: invert(1);
+  }
+}
+
+.maplibregl-canvas {
+  cursor: crosshair;
+}

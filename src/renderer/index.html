@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>railfiller</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tiles.openrailwaymap.org https://tiles.openfreemap.org; connect-src 'self' ws://localhost:* https://api.transitous.org https://tiles.openfreemap.org https://tiles.openrailwaymap.org; worker-src blob:; child-src blob:"
+    />
+    <script type="module" src="./main.ts"></script>
+  </head>
+  <body>
+    <div id="map" aria-label="World map of the rail network"></div>
+    <aside id="plate">
+      <header class="titlebar">
+        <h1>railfiller</h1>
+        <button id="toggle-menu" type="button" aria-controls="plate-body">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3.5 10 8 5.5l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </button>
+      </header>
+      <div id="plate-body">
+        <form class="route" autocomplete="off">
+          <div class="stop">
+            <label for="from">From</label>
+            <input id="from" type="text" placeholder="Departure station" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="from-options" aria-autocomplete="list" />
+            <ul id="from-options" class="options" role="listbox" aria-label="Stations" hidden></ul>
+          </div>
+          <div class="stop">
+            <label for="to">To</label>
+            <input id="to" type="text" placeholder="Arrival station" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="to-options" aria-autocomplete="list" />
+            <ul id="to-options" class="options" role="listbox" aria-label="Stations" hidden></ul>
+          </div>
+        </form>
+        <section id="result" aria-live="polite"></section>
+        <section id="saved">
+          <h2>My rides <span id="count"></span></h2>
+          <ul id="journeys"></ul>
+          <p id="empty">Pick two stations above or tap a rail line on the map. Your rides show up in orange.</p>
+        </section>
+      </div>
+      <div class="layers" role="group" aria-label="Map layers">
+        <label class="rides"><input id="show-rides" type="checkbox" checked /> My heatmap</label>
+        <label class="network"><input id="show-network" type="checkbox" checked /> Rail network</label>
+      </div>
+    </aside>
+  </body>
+</html>

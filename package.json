@@ -1,0 +1,42 @@
+{
+  "name": "railfiller",
+  "productName": "railfiller",
+  "version": "0.1.0",
+  "description": "A personal exploration atlas for railway lines worldwide",
+  "license": "MIT",
+  "repository": "github:raustefan/railfiller",
+  "private": true,
+  "main": "out/main/index.js",
+  "scripts": {
+    "dev": "env -u ELECTRON_RUN_AS_NODE electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "env -u ELECTRON_RUN_AS_NODE electron-vite preview",
+    "test": "node --test \"src/**/*.test.ts\"",
+    "typecheck": "tsc --noEmit",
+    "dist": "electron-vite build && electron-builder --mac --arm64"
+  },
+  "build": {
+    "appId": "io.github.raustefan.railfiller",
+    "files": [
+      "out/**"
+    ],
+    "icon": "build/icon.png",
+    "mac": {
+      "category": "public.app-category.travel",
+      "target": [
+        "dmg"
+      ],
+      "identity": "-",
+      "hardenedRuntime": false
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "electron": "^45.2.1",
+    "electron-builder": "^26.18.0",
+    "electron-vite": "^6.0.0",
+    "maplibre-gl": "^6.16.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  }
+}
